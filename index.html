@@ -18,6 +18,8 @@
             --card-border: #2a2a2a;
             --text-primary: #ffffff;
             --text-secondary: #b0b0b0;
+            --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            --gradient-secondary: linear-gradient(135deg, var(--secondary), #00cc6a);
         }
 
         * {
@@ -31,7 +33,10 @@
             background: var(--darker);
             color: var(--text-primary);
             min-height: 100vh;
-            background-image: radial-gradient(circle at 20% 80%, rgba(255, 42, 42, 0.1) 0%, transparent 50%);
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 42, 42, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
+            overflow-x: hidden;
         }
 
         .container {
@@ -44,25 +49,33 @@
             text-align: center;
             padding: 50px 0;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .logo-container {
-    width: 120px;  
-    height: 120px; 
-    margin: 0 auto 20px;
-    border-radius: 20px; 
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(255, 42, 42, 0.3);
-    background: white;
-    padding: 15px; 
-    border: 3px solid var(--primary); 
-}
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 42, 42, 0.3);
+            background: white;
+            padding: 15px;
+            border: 3px solid var(--primary);
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
 
-.logo-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
         h1 {
             font-size: 3.5rem;
@@ -71,12 +84,27 @@
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
             text-shadow: 0 5px 15px rgba(255, 42, 42, 0.2);
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
         }
 
         .subtitle {
             font-size: 1.3rem;
             color: var(--text-secondary);
             font-weight: 300;
+            margin-top: 15px;
         }
 
         .platform-selector {
@@ -97,22 +125,44 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .platform-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            transition: left 0.3s ease;
+            z-index: -1;
         }
 
         .platform-btn.active {
-            background: var(--primary);
             border-color: var(--primary);
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(255, 42, 42, 0.3);
+        }
+
+        .platform-btn.active::before {
+            left: 0;
         }
 
         .platform-btn:hover:not(.active) {
             border-color: var(--primary);
         }
 
+        .platform-btn:hover::before {
+            left: 0;
+        }
+
         .executors-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 25px;
             margin-bottom: 50px;
         }
@@ -125,6 +175,7 @@
             border: 2px solid var(--card-border);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .executor-card::before {
@@ -134,7 +185,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            background: var(--gradient);
         }
 
         .executor-card:hover {
@@ -161,6 +212,7 @@
             font-weight: bold;
             color: white;
             overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
         }
 
         .executor-logo img {
@@ -185,6 +237,19 @@
             width: 14px;
             height: 14px;
             border-radius: 50%;
+            position: relative;
+        }
+
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
         }
 
         .status-green {
@@ -192,9 +257,17 @@
             box-shadow: 0 0 15px var(--secondary);
         }
 
+        .status-green::after {
+            background: var(--secondary);
+        }
+
         .status-yellow {
             background: var(--warning);
             box-shadow: 0 0 15px var(--warning);
+        }
+
+        .status-yellow::after {
+            background: var(--warning);
         }
 
         .status-red {
@@ -202,10 +275,15 @@
             box-shadow: 0 0 15px var(--danger);
         }
 
+        .status-red::after {
+            background: var(--danger);
+        }
+
         .executor-info {
             color: var(--text-secondary);
             margin-bottom: 20px;
             font-size: 1rem;
+            line-height: 1.5;
         }
 
         .badges {
@@ -237,10 +315,97 @@
             color: white;
         }
 
+        .badge.free {
+            background: var(--warning);
+            color: #000;
+        }
+
+        .executor-details {
+            background: rgba(42, 42, 42, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-weight: 600;
+        }
+
+        .unc-indicator {
+            display: inline-block;
+            width: 80px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .unc-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .unc-100 { background: var(--secondary); width: 100%; }
+        .unc-96 { background: var(--secondary); width: 96%; }
+        .unc-94 { background: #ffcc00; width: 94%; }
+        .unc-90 { background: var(--warning); width: 90%; }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pros, .cons {
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .pros {
+            background: rgba(0, 255, 136, 0.1);
+            border-left: 3px solid var(--secondary);
+        }
+
+        .cons {
+            background: rgba(255, 68, 68, 0.1);
+            border-left: 3px solid var(--danger);
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .pros ul, .cons ul {
+            padding-left: 20px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .pros li, .cons li {
+            margin-bottom: 5px;
+        }
+
         .download-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--gradient);
             border: none;
             border-radius: 12px;
             color: white;
@@ -253,11 +418,30 @@
             justify-content: center;
             gap: 10px;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+            z-index: -1;
         }
 
         .download-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(255, 42, 42, 0.4);
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
         }
 
         .platform-section {
@@ -272,6 +456,65 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            margin-top: 40px;
+            border-top: 1px solid var(--card-border);
+            position: relative;
+        }
+
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 300;
+        }
+
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -289,22 +532,14 @@
             }
             
             .logo-container {
-                width: 70px;
-                height: 70px;
+                width: 100px;
+                height: 100px;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
             }
         }
-            footer {
-    text-align: center;
-    padding: 40px 0 20px;
-    margin-top: 40px;
-    border-top: 1px solid var(--card-border);
-}
-
-.copyright {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 300;
-}
     </style>
 </head>
 <body>
@@ -317,16 +552,21 @@
             <div class="subtitle">List Of Executors that can run Normal hub</div>
         </header>
 
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for an executor...">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+
         <div class="platform-selector">
-    <button class="platform-btn active" data-platform="pc">
-        <i class="fas fa-desktop"></i> PC Executors
-    </button>
-    <button class="platform-btn" data-platform="android">
-        <i class="fab fa-android"></i> Android Executors
-    </button>
-    <button class="platform-btn" data-platform="ios">
-        <i class="fab fa-apple"></i> iOS Executors
-    </button>
+            <button class="platform-btn active" data-platform="pc">
+                <i class="fas fa-desktop"></i> PC Executors
+            </button>
+            <button class="platform-btn" data-platform="android">
+                <i class="fab fa-android"></i> Android Executors
+            </button>
+            <button class="platform-btn" data-platform="ios">
+                <i class="fab fa-apple"></i> iOS Executors
+            </button>
         </div>
         
         <div id="pc" class="platform-section active">
@@ -337,12 +577,31 @@
                         <div class="executor-name">Zenith</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">The best overall value exploit with amazing performance and features.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
                         <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$34.99 (Lifetime)</span>
+                        </div>
                     </div>
                     <a href="https://zenith.win/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Zenith
@@ -355,12 +614,31 @@
                         <div class="executor-name">Wave</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">Amazing exploit with regular updates and great performance.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
                         <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">Premium</span>
+                        </div>
                     </div>
                     <a href="http://getwave.gg/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Wave
@@ -373,11 +651,31 @@
                         <div class="executor-name">Volcano</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A free exploit with good performance and regular updates.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
                     </div>
                     <a href="https://volcano.wtf/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Volcano
@@ -390,9 +688,31 @@
                         <div class="executor-name">Velocity</div>
                         <div class="status-container">
                             <div class="status-indicator status-yellow"></div>
+                            <span>Limited</span>
                         </div>
                     </div>
-                    <div class="executor-info">Some Game Support (รองรับได้บางเกม)</div>
+                    <div class="executor-info">A new free exploit with good performance.</div>
+                    <div class="badges">
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">98% <div class="unc-indicator"><div class="unc-fill unc-94"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-94"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
+                    </div>
                     <a href="https://getvelocity.lol/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Velocity
                     </a>
@@ -404,9 +724,31 @@
                         <div class="executor-name">Bunni</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">The free Level 8 exploit to use.</div>
+                    <div class="badges">
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
+                    </div>
                     <a href="https://discord.gg/bunnilol" class="download-btn" target="_blank">
                         <i class="fab fa-discord"></i> Join Discord
                     </a>
@@ -418,11 +760,30 @@
                         <div class="executor-name">Trigon</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
                     <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">Free</span>
+                        </div>
                     </div>
                     <a href="https://discord.gg/qFmjW45hNv" class="download-btn" target="_blank">
                         <i class="fab fa-discord"></i> Join Discord
@@ -435,11 +796,30 @@
                         <div class="executor-name">Potassium</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">An exploit with Lifetime license.</div>
                     <div class="badges">
                         <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$20.00 (Lifetime)</span>
+                        </div>
                     </div>
                     <a href="https://potassium.pro/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Potassium
@@ -452,9 +832,31 @@
                         <div class="executor-name">Ronix</div>
                         <div class="status-container">
                             <div class="status-indicator status-yellow"></div>
+                            <span>Limited</span>
                         </div>
                     </div>
-                    <div class="executor-info">Some Game Support (รองรับได้บางเกม)</div>
+                    <div class="executor-info">A new exploit with high UNC percentage.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">90% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">90% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$4.99 (Lifetime)</span>
+                        </div>
+                    </div>
                     <a href="https://ronixstudios.com/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Ronix
                     </a>
@@ -466,9 +868,31 @@
                         <div class="executor-name">Swift</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">The free Level 8 exploit to use.</div>
+                    <div class="badges">
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">No</span>
+                        </div>
+                    </div>
                     <a href="https://getswift.vip/download" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Swift
                     </a>
@@ -480,11 +904,30 @@
                         <div class="executor-name">Project Sindex by x.saliii</div>
                         <div class="status-container">
                             <div class="status-indicator status-red"></div>
+                            <span>Offline</span>
                         </div>
                     </div>
                     <div class="executor-info">All Game Support (รองรับได้ทุกเกม) (W.I.P)</div>
                     <div class="badges">
                         <div class="badge wip">W.I.P</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">90% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">90% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value">In Development</span>
+                        </div>
                     </div>
                     <a href="https://getlumira.vercel.app" class="download-btn" target="_blank">
                         <i class="fas fa-external-link-alt"></i> Visit Project
@@ -501,11 +944,30 @@
                         <div class="executor-name">Trigon</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
                     <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">Free</span>
+                        </div>
                     </div>
                     <a href="https://discord.gg/qFmjW45hNv" class="download-btn" target="_blank">
                         <i class="fab fa-discord"></i> Join Discord
@@ -518,9 +980,31 @@
                         <div class="executor-name">Evon</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
                     <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="badges">
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
+                    </div>
                     <a href="https://evon.cc/android" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Evon
                     </a>
@@ -532,11 +1016,31 @@
                         <div class="executor-name">ArceusX</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A long-standing mobile exploit with VNG support.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$7.49 monthly</span>
+                        </div>
                     </div>
                     <a href="https://spdmteam.com/index" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download ArceusX
@@ -549,9 +1053,31 @@
                         <div class="executor-name">Ronix</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A new exploit with high UNC percentage.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">90% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">90% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$4.99 (Lifetime)</span>
+                        </div>
+                    </div>
                     <a href="https://ronixstudios.com/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Ronix
                     </a>
@@ -563,9 +1089,31 @@
                         <div class="executor-name">Krnl</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A popular free exploit with good performance.</div>
+                    <div class="badges">
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
+                    </div>
                     <a href="https://krnl.cat" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Krnl
                     </a>
@@ -577,11 +1125,31 @@
                         <div class="executor-name">Delta</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A powerful multi-platform exploit with excellent script support.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
                     </div>
                     <a href="https://deltaexploits.gg/delta-executor-android" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Delta
@@ -594,9 +1162,31 @@
                         <div class="executor-name">Codex</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A powerful exploit with advanced features.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$4.97 monthly</span>
+                        </div>
+                    </div>
                     <a href="https://codex.lol" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Codex
                     </a>
@@ -608,9 +1198,31 @@
                         <div class="executor-name">Cryptic</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">An exploit for most platforms.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$4.99 monthly</span>
+                        </div>
+                    </div>
                     <a href="https://getcryptic.net/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Cryptic
                     </a>
@@ -626,9 +1238,31 @@
                         <div class="executor-name">ArceusX</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A long-standing mobile exploit with VNG support.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$7.49 monthly</span>
+                        </div>
+                    </div>
                     <a href="https://spdmteam.com/index" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download ArceusX
                     </a>
@@ -640,9 +1274,31 @@
                         <div class="executor-name">CodeX</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A powerful exploit with advanced features.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$4.97 monthly</span>
+                        </div>
+                    </div>
                     <a href="https://codex.lol" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download CodeX
                     </a>
@@ -654,11 +1310,31 @@
                         <div class="executor-name">Delta</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A powerful multi-platform exploit with excellent script support.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                        <div class="badge free">Free</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
                     </div>
                     <a href="https://deltaexploits.gg/delta-executor-android" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Delta
@@ -671,9 +1347,31 @@
                         <div class="executor-name">Cryptic</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">An exploit for most platforms.</div>
+                    <div class="badges">
+                        <div class="badge paid">Paid</div>
+                    </div>
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Price:</span>
+                            <span class="detail-value">$4.99 monthly</span>
+                        </div>
+                    </div>
                     <a href="https://getcryptic.net/" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Cryptic
                     </a>
@@ -685,55 +1383,117 @@
                         <div class="executor-name">Krnl</div>
                         <div class="status-container">
                             <div class="status-indicator status-green"></div>
+                            <span>Online</span>
                         </div>
                     </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
+                    <div class="executor-info">A popular free exploit with good performance.</div>
                     <div class="badges">
                         <div class="badge recommended">Recommended 👑</div>
+                        <div class="badge free">Free</div>
                     </div>
-                    <a href="https://krnl.cat" class="download-btn" target="_blank">
+                    <div class="executor-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Level:</span>
+                            <span class="detail-value">8</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">sUNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">UNC:</span>
+                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Key System:</span>
+                            <span class="detail-value">Yes</span>
+                        </div>
+                    </div>
+                    <a href="https://krnl.ca" class="download-btn" target="_blank">
                         <i class="fas fa-download"></i> Download Krnl
                     </a>
                 </div>
             </div>
         </div>
+
+        <div class="no-results" id="no-results">
+            <i class="fas fa-search fa-2x" style="margin-bottom: 15px;"></i>
+            <p>No executors found matching your search.</p>
+            <p>Try different keywords or check another platform.</p>
+        </div>
+
+        <footer>
+            <div class="copyright">
+                &copy; 2025 Normal Hub, All rights reserved. This Website Made by Project Sindex
+            </div>
+        </footer>
     </div>
-    <footer>
-    <div class="copyright">
-        &copy; 2025 Normal Hub, All rights reserved. This Website Made by Project Sindex
-    </div>
-</footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const platformBtns = document.querySelectorAll('.platform-btn');
-            const platformSections = document.querySelectorAll('.platform-section');
-
-            platformBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const platform = this.getAttribute('data-platform');
-                    
-                    platformBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    platformSections.forEach(section => {
-                        section.classList.remove('active');
-                        if (section.id === platform) {
-                            section.classList.add('active');
-                        }
-                    });
-                });
-            });
-
-            const cards = document.querySelectorAll('.executor-card');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-8px) scale(1.02)';
+        const platformBtns = document.querySelectorAll('.platform-btn');
+        const platformSections = document.querySelectorAll('.platform-section');
+        
+        platformBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const platform = btn.getAttribute('data-platform');
+                
+                platformBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                platformSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === platform) {
+                        section.classList.add('active');
+                    }
                 });
                 
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
+                document.querySelector('.search-input').value = '';
+                filterExecutors();
+            });
+        });
+
+        const searchInput = document.querySelector('.search-input');
+        const noResults = document.getElementById('no-results');
+        
+        searchInput.addEventListener('input', filterExecutors);
+        
+        function filterExecutors() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const activePlatform = document.querySelector('.platform-btn.active').getAttribute('data-platform');
+            const activeSection = document.getElementById(activePlatform);
+            const executorCards = activeSection.querySelectorAll('.executor-card');
+            
+            let visibleCount = 0;
+            
+            executorCards.forEach(card => {
+                const executorName = card.querySelector('.executor-name').textContent.toLowerCase();
+                const executorInfo = card.querySelector('.executor-info').textContent.toLowerCase();
+                
+                if (executorName.includes(searchTerm) || executorInfo.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            if (visibleCount === 0 && searchTerm.length > 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        const cards = document.querySelectorAll('.executor-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px)';
+                card.style.borderColor = 'var(--primary)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.borderColor = 'var(--card-border)';
             });
         });
     </script>
