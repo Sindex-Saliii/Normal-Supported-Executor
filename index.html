@@ -1,1500 +1,1681 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Normal Hub - Supported Executors</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #ff2a2a;
-            --primary-dark: #d40000;
-            --secondary: #00ff88;
-            --warning: #ffaa00;
-            --danger: #ff4444;
-            --dark: #0a0a0a;
-            --darker: #000000;
-            --card-bg: #151515;
-            --card-border: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
-            --gradient: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            --gradient-secondary: linear-gradient(135deg, var(--secondary), #00cc6a);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: var(--darker);
-            color: var(--text-primary);
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(255, 42, 42, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%);
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            text-align: center;
-            padding: 50px 0;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .logo-container {
-            width: 140px;
-            height: 140px;
-            margin: 0 auto 25px;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(255, 42, 42, 0.3);
-            background: white;
-            padding: 15px;
-            border: 3px solid var(--primary);
-            position: relative;
-            z-index: 1;
-            transition: transform 0.3s ease;
-        }
-
-        .logo-container:hover {
-            transform: scale(1.05);
-        }
-
-        .logo-image {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            text-shadow: 0 5px 15px rgba(255, 42, 42, 0.2);
-            position: relative;
-            display: inline-block;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--gradient);
-            border-radius: 2px;
-        }
-
-        .subtitle {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            font-weight: 300;
-            margin-top: 15px;
-        }
-
-        .platform-selector {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-
-        .platform-btn {
-            padding: 15px 35px;
-            background: var(--card-bg);
-            border: 2px solid var(--card-border);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .platform-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
-
-        .platform-btn.active {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 42, 42, 0.3);
-        }
-
-        .platform-btn.active::before {
-            left: 0;
-        }
-
-        .platform-btn:hover:not(.active) {
-            border-color: var(--primary);
-        }
-
-        .platform-btn:hover::before {
-            left: 0;
-        }
-
-        .executors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-
-        .executor-card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 25px;
-            transition: all 0.3s ease;
-            border: 2px solid var(--card-border);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .executor-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient);
-        }
-
-        .executor-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary);
-            box-shadow: 0 15px 35px rgba(255, 42, 42, 0.15);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .executor-logo {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            background: var(--card-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .executor-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .executor-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .status-container {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-indicator {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .status-indicator::after {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            border-radius: 50%;
-            opacity: 0.5;
-            animation: pulse 2s infinite;
-        }
-
-        .status-green {
-            background: var(--secondary);
-            box-shadow: 0 0 15px var(--secondary);
-        }
-
-        .status-green::after {
-            background: var(--secondary);
-        }
-
-        .status-yellow {
-            background: var(--warning);
-            box-shadow: 0 0 15px var(--warning);
-        }
-
-        .status-yellow::after {
-            background: var(--warning);
-        }
-
-        .status-red {
-            background: var(--danger);
-            box-shadow: 0 0 15px var(--danger);
-        }
-
-        .status-red::after {
-            background: var(--danger);
-        }
-
-        .executor-info {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .badges {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .badge.recommended {
-            background: var(--secondary);
-            color: #000;
-        }
-
-        .badge.paid {
-            background: var(--primary);
-            color: white;
-        }
-
-        .badge.wip {
-            background: var(--danger);
-            color: white;
-        }
-
-        .badge.free {
-            background: var(--warning);
-            color: #000;
-        }
-
-        .executor-details {
-            background: rgba(42, 42, 42, 0.5);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-left: 3px solid var(--primary);
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .detail-label {
-            color: var(--text-secondary);
-        }
-
-        .detail-value {
-            font-weight: 600;
-        }
-
-        .unc-indicator {
-            display: inline-block;
-            width: 80px;
-            height: 8px;
-            background: #333;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-            margin-left: 10px;
-        }
-
-        .unc-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-
-        .unc-100 { background: var(--secondary); width: 100%; }
-        .unc-96 { background: var(--secondary); width: 96%; }
-        .unc-94 { background: #ffcc00; width: 94%; }
-        .unc-90 { background: var(--warning); width: 90%; }
-
-        .pros-cons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .pros, .cons {
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .pros {
-            background: rgba(0, 255, 136, 0.1);
-            border-left: 3px solid var(--secondary);
-        }
-
-        .cons {
-            background: rgba(255, 68, 68, 0.1);
-            border-left: 3px solid var(--danger);
-        }
-
-        .pros h4, .cons h4 {
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
-
-        .pros ul, .cons ul {
-            padding-left: 20px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .pros li, .cons li {
-            margin-bottom: 5px;
-        }
-
-        .download-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--gradient);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .download-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-            z-index: -1;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 42, 42, 0.4);
-        }
-
-        .download-btn:hover::before {
-            left: 100%;
-        }
-
-        .platform-section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .platform-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px 0 20px;
-            margin-top: 40px;
-            border-top: 1px solid var(--card-border);
-            position: relative;
-        }
-
-        .copyright {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 300;
-        }
-
-        .search-container {
-            max-width: 500px;
-            margin: 0 auto 40px;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 15px 20px;
-            background: var(--card-bg);
-            border: 2px solid var(--card-border);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .executors-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .platform-btn {
-                padding: 12px 25px;
-                font-size: 1rem;
-            }
-            
-            .logo-container {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .pros-cons {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Normal Hub — Supported Executors</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --muted: #9aa0a6;
+      --glass: rgba(255,255,255,0.03);
+      --accent-1: #ff3b3b;
+      --accent-2: #d10000;
+      --accent-3: #ff6b6b;
+      --card-border: rgba(255,255,255,0.04);
+      --radius: 14px;
+      --glass-2: linear-gradient(135deg, rgba(255,59,59,0.08), rgba(209,0,0,0.04));
+      --shadow: 0 8px 30px rgba(0,0,0,0.6);
+      --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    
+    * {
+      box-sizing: border-box;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    }
+    
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(209,0,0,0.03), transparent), 
+                  radial-gradient(800px 400px at 90% 90%, rgba(255,59,59,0.03), transparent),
+                  var(--bg);
+      color: #e9eef1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      line-height: 1.6;
+    }
+    
+    .wrap {
+      max-width: 1300px;
+      margin: 36px auto;
+      padding: 28px;
+    }
+    
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius: 18px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      margin-bottom: 30px;
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+    }
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .logo {
+      width: 84px;
+      height: 84px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid rgba(255,59,59,0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--glass-2);
+      transition: var(--transition);
+    }
+    
+    .logo:hover {
+      transform: rotate(5deg);
+      border-color: rgba(255,59,59,0.3);
+    }
+    
+    .logo img {
+      width: 84px;
+      height: 84px;
+      object-fit: contain;
+    }
+    
+    h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      line-height: 1.2;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .lead {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 0.95rem;
+      margin-top: 5px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 16px;
+      margin-left: auto;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .platforms {
+      display: flex;
+      gap: 0;
+      border-radius: 12px;
+      background: rgba(20, 20, 20, 0.8);
+      border: 1px solid rgba(255, 59, 59, 0.2);
+      padding: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .platforms::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-1), transparent);
+    }
+    
+    .platforms button {
+      background: transparent;
+      border: none;
+      padding: 12px 20px;
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      transition: var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .platforms button:hover {
+      color: #fff;
+    }
+    
+    .platforms button.active {
+      color: #fff;
+    }
+    
+    .platforms .active-indicator {
+      position: absolute;
+      top: 4px;
+      height: calc(100% - 8px);
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      border-radius: 10px;
+      transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      box-shadow: 0 4px 12px rgba(255, 59, 59, 0.3);
+      z-index: 0;
+    }
+    
+    .search {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(20, 20, 20, 0.8);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 59, 59, 0.2);
+      transition: var(--transition);
+    }
+    
+    .search:focus-within {
+      border-color: var(--accent-1);
+      box-shadow: 0 0 0 2px rgba(255,59,59,0.1);
+    }
+    
+    .search input {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 4px 0;
+      font-size: 0.95rem;
+      outline: none;
+      width: 260px;
+    }
+    
+    .search input::placeholder {
+      color: var(--muted);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+    
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border-radius: var(--radius);
+      padding: 22px;
+      border: 1px solid var(--card-border);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      border-left: 4px solid transparent;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,59,59,0.3), transparent);
+    }
+    
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.8);
+      border-left-color: var(--accent-1);
+    }
+    
+    .card .top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    
+    .executor-logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--glass);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .executor-logo img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+    }
+    
+    .name {
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+    
+    .status {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    
+    .dot.online {
+      background: var(--accent-1);
+      box-shadow: 0 0 14px rgba(255, 59, 59, 0.4);
+    }
+    
+    .dot.limited {
+      background: #ffb34d;
+      box-shadow: 0 0 10px rgba(255,179,77,0.14);
+    }
+    
+    .dot.off {
+      background: #ff6b6b;
+      box-shadow: 0 0 10px rgba(255,107,107,0.14);
+    }
+    
+    .info {
+      color: var(--muted);
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    
+    .badge.rec {
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
+      color: #fff;
+    }
+    
+    .badge.paid {
+      background: rgba(255,59,59,0.12);
+      color: var(--accent-1);
+      border: 1px solid rgba(255,59,59,0.2);
+    }
+    
+    .badge.free {
+      background: rgba(255,59,59,0.08);
+      color: var(--accent-1);
+      border: 1px solid rgba(255,59,59,0.2);
+    }
+    
+    .badge.wip {
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .badge.key {
+      background: rgba(255, 59, 59, 0.12);
+      color: var(--accent-1);
+      border: 1px solid rgba(255, 59, 59, 0.2);
+    }
+    
+    .details {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+    
+    .details .row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .unc-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .unc-bar {
+      width: 110px;
+      height: 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    
+    .unc-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+    
+    .unc-100 {
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
+    }
+    
+    .unc-96 {
+      width: 96%;
+      background: linear-gradient(90deg, var(--accent-1), #ff8a8a);
+    }
+    
+    .unc-94 {
+      width: 94%;
+      background: #ff8a8a;
+    }
+    
+    .unc-90 {
+      width: 90%;
+      background: #ff6b6b;
+    }
+    
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: 0;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    
+    .btn.primary {
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      color: #fff;
+    }
+    
+    .btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,59,59,0.4);
+    }
+    
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+    }
+    
+    .btn.secondary:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+      border-color: rgba(255,59,59,0.3);
+    }
+    
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+    
+    .key-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+    
+    .key-info i {
+      color: var(--accent-1);
+    }
+    
+    @media (max-width: 1000px) {
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 16px;
+        margin: 20px auto;
+      }
+      
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        position: relative;
+        top: 0;
+      }
+      
+      .controls {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .search input {
+        width: 180px;
+      }
+      
+      .platforms {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .search input {
+        width: 140px;
+      }
+      
+      .platforms {
+        flex-wrap: wrap;
+      }
+      
+      .platforms button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+    
+    mark {
+      background: linear-gradient(90deg, rgba(255,59,59,0.3), rgba(255,107,107,0.3));
+      padding: 0 4px;
+      border-radius: 4px;
+      color: #fff;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo-container">
-                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/NormalHub.png" alt="Normal Hub" class="logo-image">
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">
+          <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/NormalHub.png" alt="Normal Hub">
+        </div>
+        <div>
+          <h1>Normal Hub — Supported Executors</h1>
+          <div class="lead">List of executors compatible with Normal Hub</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="platforms" role="tablist" aria-label="Platforms">
+          <div class="active-indicator"></div>
+          <button class="platform-btn active" data-platform="pc" aria-pressed="true">
+            <i class="fas fa-desktop"></i> PC
+          </button>
+          <button class="platform-btn" data-platform="android" aria-pressed="false">
+            <i class="fab fa-android"></i> Android
+          </button>
+          <button class="platform-btn" data-platform="ios" aria-pressed="false">
+            <i class="fab fa-apple"></i> iOS
+          </button>
+        </div>
+        <div class="search">
+          <i class="fas fa-search" aria-hidden="true"></i>
+          <input id="search" placeholder="Search executors, features..." aria-label="Search executors">
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section id="pc" class="platform-section">
+        <div class="grid">
+          <article class="card" data-name="Zenith" data-status="online" data-price="paid" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://framerusercontent.com/images/x9dgYhhG8T8nA56Naw3P1bMVDg.png?scale-down-to=512" alt="Zenith">
+              </div>
+              <div>
+                <div class="name">Zenith</div>
+                <div class="info">The best overall value exploit with amazing performance and features.</div>
+              </div>
+              <div class="status">
+                <span class="dot online" aria-hidden="true"></span>
+                <span>Online</span>
+              </div>
             </div>
-            <h1>Normal Hub Supported Executor</h1>
-            <div class="subtitle">List Of Executors that can run Normal hub</div>
-        </header>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge paid">Paid</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Price: <strong>$6.48 weekly</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://zenith.win/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
 
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="Search for an executor...">
-            <i class="fas fa-search search-icon"></i>
-        </div>
+          <article class="card" data-name="Wave" data-status="online" data-price="paid" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Wave.png" alt="Wave">
+              </div>
+              <div>
+                <div class="name">Wave</div>
+                <div class="info">Amazing exploit with regular updates and great performance.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge paid">Paid</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Price: <strong>$6.99 weekly</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="http://getwave.gg/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
 
-        <div class="platform-selector">
-            <button class="platform-btn active" data-platform="pc">
-                <i class="fas fa-desktop"></i> PC Executors
-            </button>
-            <button class="platform-btn" data-platform="android">
-                <i class="fab fa-android"></i> Android Executors
-            </button>
-            <button class="platform-btn" data-platform="ios">
-                <i class="fab fa-apple"></i> iOS Executors
-            </button>
+          <article class="card" data-name="Volcano" data-status="off" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Volcano.png" alt="Volcano">
+              </div>
+              <div>
+                <div class="name">Volcano</div>
+                <div class="info">A free exploit with good performance and regular updates.</div>
+              </div>
+              <div class="status">
+                <span class="dot off"></span>
+                <span>Not Updated</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>96%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://volcano.wtf/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Velocity" data-status="limited" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Velocity.png" alt="Velocity">
+              </div>
+              <div>
+                <div class="name">Velocity</div>
+                <div class="info">A new free exploit with good performance.</div>
+              </div>
+              <div class="status">
+                <span class="dot limited"></span>
+                <span>Limited</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>98%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-94"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://getvelocity.lol/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Bunni" data-status="off" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Bunni.png" alt="Bunni">
+              </div>
+              <div>
+                <div class="name">Bunni</div>
+                <div class="info">The free Level 8 exploit to use.</div>
+              </div>
+              <div class="status">
+                <span class="dot off"></span>
+                <span>Not Updated</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://discord.gg/bunnilol" target="_blank" rel="noopener">
+                <i class="fab fa-discord"></i> Join Discord
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Trigon" data-status="off" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Trigon.png" alt="Trigon">
+              </div>
+              <div>
+                <div class="name">Trigon</div>
+                <div class="info">All Game Support (รองรับได้ทุกเกม)</div>
+              </div>
+              <div class="status">
+                <span class="dot off"></span>
+                <span>Not Updated</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>99%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Price: <strong>Free</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://discord.gg/qFmjW45hNv" target="_blank" rel="noopener">
+                <i class="fab fa-discord"></i> Join Discord
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Potassium" data-status="online" data-price="paid" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Potassium.png" alt="Potassium">
+              </div>
+              <div>
+                <div class="name">Potassium</div>
+                <div class="info">An exploit with Lifetime license.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge paid">Paid</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>96%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>$20.00 Lifetime</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://potassium.pro/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Ronix" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Ronix.png" alt="Ronix">
+              </div>
+              <div>
+                <div class="name">Ronix</div>
+                <div class="info">A new exploit with high UNC percentage.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-90"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Price: <strong>Free / $4.99 Lifetime</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://ronixstudios.com/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Swift" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Swift.png" alt="Swift">
+              </div>
+              <div>
+                <div class="name">Swift</div>
+                <div class="info">The free Level 8 exploit to use.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>96%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Key System: <strong>No</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://getswift.vip/download" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Project Sindex" data-status="limited" data-price="wip" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/ProjectSindex.png" alt="Project Sindex">
+              </div>
+              <div>
+                <div class="name">Project Sindex by x.saliii</div>
+                <div class="info">All Game Support (รองรับได้ทุกเกม) (W.I.P)</div>
+              </div>
+              <div class="status">
+                <span class="dot limited"></span>
+                <span>Beta test</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge wip">W.I.P</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>95%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-90"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Status: <strong>In Development</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://getlumira.vercel.app" target="_blank" rel="noopener">
+                <i class="fas fa-external-link-alt"></i> Visit
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
         </div>
+      </section>
+
+      <section id="android" class="platform-section" style="display:none;">
+        <div class="grid">
+          <article class="card" data-name="Trigon" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Trigon.png" alt="Trigon">
+              </div>
+              <div>
+                <div class="name">Trigon</div>
+                <div class="info">All Game Support (รองรับได้ทุกเกม)</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>95%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free</strong></div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://discord.gg/qFmjW45hNv" target="_blank" rel="noopener">
+                <i class="fab fa-discord"></i> Join
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Evon" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Evon.png" alt="Evon">
+              </div>
+              <div>
+                <div class="name">Evon</div>
+                <div class="info">All Game Support (รองรับได้ทุกเกม)</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>unknown%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://evon.cc/android" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="ArceusX" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHyJ-cGe0SWi0oKNI4ZPzrqZJzi8WGBwPYww&s" alt="ArceusX">
+              </div>
+              <div>
+                <div class="name">ArceusX</div>
+                <div class="info">A long-standing mobile exploit with VNG support.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>unknown%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free / $7.49 monthly</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://spdmteam.com/index" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Ronix" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Ronix.png" alt="Ronix">
+              </div>
+              <div>
+                <div class="name">Ronix</div>
+                <div class="info">A new exploit with high UNC percentage.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-90"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Price: <strong>Free / $4.99 Lifetime</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://ronixstudios.com/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Krnl" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Krnl.png" alt="Krnl">
+              </div>
+              <div>
+                <div class="name">Krnl</div>
+                <div class="info">A popular free exploit with good performance.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>94%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>95%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://krnl.cat" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Delta" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Delta.png" alt="Delta">
+              </div>
+              <div>
+                <div class="name">Delta</div>
+                <div class="info">A powerful multi-platform exploit with excellent script support.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-100"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://deltaexploits.gg/delta-executor-android" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Codex" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Codex.png" alt="Codex">
+              </div>
+              <div>
+                <div class="name">Codex</div>
+                <div class="info">A powerful exploit with advanced features.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>unknown%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free / $4.97 monthly</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://codex.lol" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Cryptic" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Cryptic.png" alt="Cryptic">
+              </div>
+              <div>
+                <div class="name">Cryptic</div>
+                <div class="info">An exploit for most platforms.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>unknown%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free / $4.99 monthly</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://getcryptic.net/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="ios" class="platform-section" style="display:none;">
+        <div class="grid">
+          <article class="card" data-name="ArceusX" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQHyJ-cGe0SWi0oKNI4ZPzrqZJzi8WGBwPYww&s" alt="ArceusX">
+              </div>
+              <div>
+                <div class="name">ArceusX</div>
+                <div class="info">A long-standing mobile exploit with VNG support.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>unknown%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free / $7.49 monthly</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://spdmteam.com/index" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="CodeX" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Codex.png" alt="CodeX">
+              </div>
+              <div>
+                <div class="name">CodeX</div>
+                <div class="info">A powerful exploit with advanced features.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>96%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free / $4.97 monthly</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://codex.lol" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Delta" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Delta.png" alt="Delta">
+              </div>
+              <div>
+                <div class="name">Delta</div>
+                <div class="info">A powerful multi-platform exploit with excellent script support.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>100%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-100"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>99%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://deltaexploits.gg/delta-executor-android" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Cryptic" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Cryptic.png" alt="Cryptic">
+              </div>
+              <div>
+                <div class="name">Cryptic</div>
+                <div class="info">An exploit for most platforms.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>unknown%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>96%</strong></div>
+              <div class="row">Price: <strong>Free / $4.99 monthly</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://getcryptic.net/" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+
+          <article class="card" data-name="Krnl" data-status="online" data-price="free" data-level="8">
+            <div class="top">
+              <div class="executor-logo">
+                <img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Krnl.png" alt="Krnl">
+              </div>
+              <div>
+                <div class="name">Krnl</div>
+                <div class="info">A popular free exploit with good performance.</div>
+              </div>
+              <div class="status">
+                <span class="dot online"></span>
+                <span>Online</span>
+              </div>
+            </div>
+            <div class="badges">
+              <div class="badge rec">Recommended</div>
+              <div class="badge free">Free</div>
+              <div class="badge key">Key Required</div>
+            </div>
+            <div class="details">
+              <div class="row">Level: <strong>8</strong></div>
+              <div class="unc-wrapper">sUNC: <strong>94%</strong>
+                <div class="unc-bar">
+                  <div class="unc-fill unc-96"></div>
+                </div>
+              </div>
+            </div>
+            <div class="details" style="margin-top:8px;">
+              <div class="row">UNC: <strong>95%</strong></div>
+              <div class="row">Key System: <strong>Yes</strong></div>
+            </div>
+            <div class="key-info">
+              <i class="fas fa-key"></i>
+              <span>Free version requires obtaining a key</span>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="https://krnl.ca" target="_blank" rel="noopener">
+                <i class="fas fa-download"></i> Download
+              </a>
+              <a class="btn secondary" href="#">
+                <i class="fas fa-info-circle"></i> More
+              </a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer>&copy; 2025 Normal Hub — Made by Project Sindex</footer>
+  </div>
+
+  <script>
+    const platformBtns = document.querySelectorAll('.platform-btn');
+    const sections = document.querySelectorAll('.platform-section');
+    const searchInput = document.getElementById('search');
+    const activeIndicator = document.querySelector('.active-indicator');
+
+    function updateActiveIndicator() {
+      const activeBtn = document.querySelector('.platform-btn.active');
+      if (activeBtn) {
+        const btnRect = activeBtn.getBoundingClientRect();
+        const containerRect = activeBtn.parentElement.getBoundingClientRect();
         
-        <div id="pc" class="platform-section active">
-            <div class="executors-grid">
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://framerusercontent.com/images/x9dgYhhG8T8nA56Naw3P1bMVDg.png?scale-down-to=512" alt="Zenith"></div>
-                        <div class="executor-name">Zenith</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">The best overall value exploit with amazing performance and features.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                        <div class="badge paid">Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$34.99 (Lifetime)</span>
-                        </div>
-                    </div>
-                    <a href="https://zenith.win/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Zenith
-                    </a>
-                </div>
+        activeIndicator.style.width = `${btnRect.width}px`;
+        activeIndicator.style.left = `${btnRect.left - containerRect.left}px`;
+      }
+    }
 
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Wave.png" alt="Wave"></div>
-                        <div class="executor-name">Wave</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">Amazing exploit with regular updates and great performance.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                        <div class="badge paid">Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">Premium</span>
-                        </div>
-                    </div>
-                    <a href="http://getwave.gg/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Wave
-                    </a>
-                </div>
+    platformBtns.forEach(b => b.addEventListener('click', () => {
+      platformBtns.forEach(x => {
+        x.classList.remove('active');
+        x.setAttribute('aria-pressed', 'false');
+      });
+      b.classList.add('active');
+      b.setAttribute('aria-pressed', 'true');
+      
+      const platform = b.dataset.platform;
+      sections.forEach(s => {
+        s.style.display = s.id === platform ? 'block' : 'none';
+      });
+      
+      setTimeout(updateActiveIndicator, 10);
+      
+      searchInput.value = '';
+      filterCards();
+    }));
 
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Volcano.png" alt="Volcano"></div>
-                        <div class="executor-name">Volcano</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-red"></div>
-                            <span>Not Updated</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A free exploit with good performance and regular updates.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://volcano.wtf/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Volcano
-                    </a>
-                </div>
+    function highlight(text, term) {
+      if (!term) return text;
+      const re = new RegExp('(' + term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+      return text.replace(re, m => '<mark>' + m + '</mark>');
+    }
 
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Velocity.png" alt="Velocity"></div>
-                        <div class="executor-name">Velocity</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-yellow"></div>
-                            <span>Limited</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A new free exploit with good performance.</div>
-                    <div class="badges">
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">98% <div class="unc-indicator"><div class="unc-fill unc-94"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-94"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://getvelocity.lol/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Velocity
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Bunni.png" alt="Bunni"></div>
-                        <div class="executor-name">Bunni</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-red"></div>
-                            <span>Not Updated</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">The free Level 8 exploit to use.</div>
-                    <div class="badges">
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://discord.gg/bunnilol" class="download-btn" target="_blank">
-                        <i class="fab fa-discord"></i> Join Discord
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Trigon.png" alt="Trigon"></div>
-                        <div class="executor-name">Trigon</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-red"></div>
-                            <span>Not Updated</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">Free</span>
-                        </div>
-                    </div>
-                    <a href="https://discord.gg/qFmjW45hNv" class="download-btn" target="_blank">
-                        <i class="fab fa-discord"></i> Join Discord
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Potassium.png" alt="Potassium"></div>
-                        <div class="executor-name">Potassium</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">An exploit with Lifetime license.</div>
-                    <div class="badges">
-                        <div class="badge paid">Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$20.00 (Lifetime)</span>
-                        </div>
-                    </div>
-                    <a href="https://potassium.pro/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Potassium
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Ronix.png" alt="Ronix"></div>
-                        <div class="executor-name">Ronix</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A new exploit with high UNC percentage.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$4.99 (Lifetime) (also has free version with key)</span>
-                        </div>
-                    </div>
-                    <a href="https://ronixstudios.com/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Ronix
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Swift.png" alt="Swift"></div>
-                        <div class="executor-name">Swift</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">The free Level 8 exploit to use.</div>
-                    <div class="badges">
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">No</span>
-                        </div>
-                    </div>
-                    <a href="https://getswift.vip/download" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Swift
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/ProjectSindex.png" alt="Project Sindex"></div>
-                        <div class="executor-name">Project Sindex by x.saliii</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-yellow"></div>
-                            <span>Beta test</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม) (W.I.P)</div>
-                    <div class="badges">
-                        <div class="badge wip">W.I.P</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">95% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Status:</span>
-                            <span class="detail-value">In Development</span>
-                        </div>
-                    </div>
-                    <a href="https://getlumira.vercel.app" class="download-btn" target="_blank">
-                        <i class="fas fa-external-link-alt"></i> Visit Project
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div id="android" class="platform-section">
-            <div class="executors-grid">
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Trigon.png" alt="Trigon"></div>
-                        <div class="executor-name">Trigon</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">95% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">Free</span>
-                        </div>
-                    </div>
-                    <a href="https://discord.gg/qFmjW45hNv" class="download-btn" target="_blank">
-                        <i class="fab fa-discord"></i> Join Discord
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Evon.png" alt="Evon"></div>
-                        <div class="executor-name">Evon</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">All Game Support (รองรับได้ทุกเกม)</div>
-                    <div class="badges">
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">unknown% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://evon.cc/android" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Evon
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://github.com/Sindex-Saliii/Normal-Supported-Executor/blob/9164504259e8708a443a03c2dcea3c5205cdd591/assets/ArceusX.png" alt="ArceusX"></div>
-                        <div class="executor-name">ArceusX</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A long-standing mobile exploit with VNG support.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">unknown% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">Free</span>
-                        </div>
-                    </div>
-                    <a href="https://spdmteam.com/index" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download ArceusX
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Ronix.png" alt="Ronix"></div>
-                        <div class="executor-name">Ronix</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A new exploit with high UNC percentage.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free and Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-90"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$4.99 (Lifetime) (Free with keys)</span>
-                        </div>
-                    </div>
-                    <a href="https://ronixstudios.com/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Ronix
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Krnl.png" alt="Krnl"></div>
-                        <div class="executor-name">Krnl</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A popular free exploit with good performance.</div>
-                    <div class="badges">
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">94% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">95% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://krnl.cat" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Krnl
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Delta.png" alt="Delta"></div>
-                        <div class="executor-name">Delta</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A powerful multi-platform exploit with excellent script support.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://deltaexploits.gg/delta-executor-android" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Delta
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Codex.png" alt="Codex"></div>
-                        <div class="executor-name">Codex</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A powerful exploit with advanced features.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">unknown% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">Free</span>
-                        </div>
-                    </div>
-                    <a href="https://codex.lol" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Codex
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Cryptic.png" alt="Cryptic"></div>
-                        <div class="executor-name">Cryptic</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">An exploit for most platforms.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free / Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">unknown% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$4.99 monthly (or Free with keys)</span>
-                        </div>
-                    </div>
-                    <a href="https://getcryptic.net/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Cryptic
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div id="ios" class="platform-section">
-            <div class="executors-grid">
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://github.com/Sindex-Saliii/Normal-Supported-Executor/blob/9164504259e8708a443a03c2dcea3c5205cdd591/assets/ArceusX.png" alt="ArceusX"></div>
-                        <div class="executor-name">ArceusX</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A long-standing mobile exploit with VNG support.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free / Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">unknown% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$7.49 monthly (or free with keys)</span>
-                        </div>
-                    </div>
-                    <a href="https://spdmteam.com/index" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download ArceusX
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Codex.png" alt="CodeX"></div>
-                        <div class="executor-name">CodeX</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A powerful exploit with advanced features.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free / Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$4.97 monthly (or free with keys)</span>
-                        </div>
-                    </div>
-                    <a href="https://codex.lol" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download CodeX
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Delta.png" alt="Delta"></div>
-                        <div class="executor-name">Delta</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A powerful multi-platform exploit with excellent script support.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">100% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">99% <div class="unc-indicator"><div class="unc-fill unc-100"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://deltaexploits.gg/delta-executor-android" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Delta
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Cryptic.png" alt="Cryptic"></div>
-                        <div class="executor-name">Cryptic</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">An exploit for most platforms.</div>
-                    <div class="badges">
-                        <div class="badge paid">Free / Paid</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">unknown% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">96% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Price:</span>
-                            <span class="detail-value">$4.99 monthly (or free with key)</span>
-                        </div>
-                    </div>
-                    <a href="https://getcryptic.net/" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Cryptic
-                    </a>
-                </div>
-
-                <div class="executor-card">
-                    <div class="card-header">
-                        <div class="executor-logo"><img src="https://raw.githubusercontent.com/Sindex-Saliii/Normal-Supported-Executor/220248316011def1fc8621a5f96aec1f7f94bacc/assets/Krnl.png" alt="Krnl"></div>
-                        <div class="executor-name">Krnl</div>
-                        <div class="status-container">
-                            <div class="status-indicator status-green"></div>
-                            <span>Online</span>
-                        </div>
-                    </div>
-                    <div class="executor-info">A popular free exploit with good performance.</div>
-                    <div class="badges">
-                        <div class="badge recommended">Recommended 👑</div>
-                        <div class="badge free">Free</div>
-                    </div>
-                    <div class="executor-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Level:</span>
-                            <span class="detail-value">8</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">sUNC:</span>
-                            <span class="detail-value">94% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">UNC:</span>
-                            <span class="detail-value">95% <div class="unc-indicator"><div class="unc-fill unc-96"></div></div></span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Key System:</span>
-                            <span class="detail-value">Yes</span>
-                        </div>
-                    </div>
-                    <a href="https://krnl.ca" class="download-btn" target="_blank">
-                        <i class="fas fa-download"></i> Download Krnl
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <div class="no-results" id="no-results">
-            <i class="fas fa-search fa-2x" style="margin-bottom: 15px;"></i>
-            <p>No executors found matching your search.</p>
-            <p>Try different keywords or check another platform.</p>
-        </div>
-
-        <footer>
-            <div class="copyright">
-                &copy; 2025 Normal Hub, All rights reserved. This Website Made by Project Sindex
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        const platformBtns = document.querySelectorAll('.platform-btn');
-        const platformSections = document.querySelectorAll('.platform-section');
+    function filterCards() {
+      const q = searchInput.value.trim().toLowerCase();
+      const active = document.querySelector('.platform-btn.active').dataset.platform;
+      const container = document.getElementById(active);
+      const cards = container.querySelectorAll('.card');
+      let visible = 0;
+      
+      cards.forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        const info = card.querySelector('.info').textContent.toLowerCase();
         
-        platformBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const platform = btn.getAttribute('data-platform');
-                
-                platformBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                
-                platformSections.forEach(section => {
-                    section.classList.remove('active');
-                    if (section.id === platform) {
-                        section.classList.add('active');
-                    }
-                });
-                
-                document.querySelector('.search-input').value = '';
-                filterExecutors();
-            });
-        });
-
-        const searchInput = document.querySelector('.search-input');
-        const noResults = document.getElementById('no-results');
-        
-        searchInput.addEventListener('input', filterExecutors);
-        
-        function filterExecutors() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const activePlatform = document.querySelector('.platform-btn.active').getAttribute('data-platform');
-            const activeSection = document.getElementById(activePlatform);
-            const executorCards = activeSection.querySelectorAll('.executor-card');
-            
-            let visibleCount = 0;
-            
-            executorCards.forEach(card => {
-                const executorName = card.querySelector('.executor-name').textContent.toLowerCase();
-                const executorInfo = card.querySelector('.executor-info').textContent.toLowerCase();
-                
-                if (executorName.includes(searchTerm) || executorInfo.includes(searchTerm)) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            if (visibleCount === 0 && searchTerm.length > 0) {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
+        if (name.includes(q) || info.includes(q)) {
+          card.style.display = 'block';
+          visible++;
+          if (q) {
+            const n = card.querySelector('.name');
+            n.innerHTML = highlight(card.querySelector('.name').textContent, q);
+          }
+        } else {
+          card.style.display = 'none';
+          card.querySelector('.name').innerHTML = card.dataset.name;
         }
+      });
+      
+      const noResults = container.querySelector('.no-results');
+      if (visible === 0 && q) {
+        if (!noResults) {
+          const noResultsEl = document.createElement('div');
+          noResultsEl.className = 'no-results';
+          noResultsEl.innerHTML = `<p>No executors found for "${q}"</p><p>Try a different search term</p>`;
+          container.appendChild(noResultsEl);
+        }
+      } else if (noResults) {
+        noResults.remove();
+      }
+    }
 
-        const cards = document.querySelectorAll('.executor-card');
-        cards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-8px)';
-                card.style.borderColor = 'var(--primary)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
-                card.style.borderColor = 'var(--card-border)';
-            });
-        });
-    </script>
+    searchInput.addEventListener('input', filterCards);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
+    window.addEventListener('load', updateActiveIndicator);
+    window.addEventListener('resize', updateActiveIndicator);
+  </script>
 </body>
 </html>
